@@ -21,7 +21,7 @@ CINTSRCS:= $(wildcard $(srcdir)/*_dict.cc)
 
 SRCS	:= $(srcdir)/FalconTester.cc
 CXXSRCS	:= $(srcdir)/TKDTreeBinning.cxx $(srcdir)/TKDTree.cxx 
-OTHERSRCS:= $(filter-out $(CINTSRCS) $(SRCS),$(wildcard $(srcdir)/*.cc))
+#OTHERSRCS:= $(filter-out $(CINTSRCS) $(SRCS),$(wildcard $(srcdir)/*.cc))
 
 # list of dictionaries to be created
 DICTIONARIES	:= $(SRCS:.cc=_dict.cc) #$(CXXSRCS:.cxx=_dict.cc)
@@ -39,7 +39,7 @@ CXXOBJECTS	:= $(CXXSRCS:.cxx=.o)
 ROOTCINT	:= rootcint
 
 # check for clang++, otherwise use g++
-COMPILER	:= $(shell which clang++ >& $(HOME)/.cxx; tail $(HOME)/.cxx)
+COMPILER	:= $(shell which clang++ >& $(PWD)/.cxx; tail $(PWD)/.cxx)
 COMPILER	:= $(shell basename "$(COMPILER)")
 ifeq ($(COMPILER),clang++)
 CXX		:= clang++
