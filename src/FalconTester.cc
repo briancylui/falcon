@@ -26,6 +26,8 @@
 
 #include "FalconTester.h"
 
+#include<omp.h>
+
 using namespace std;
 
 void  FalconTester::Add(string filename)
@@ -202,13 +204,16 @@ void FalconTester::Build(std::string filename)
 
   cout << "4. bin gen level data...please be patient!" << endl;
 
-  TStopwatch swatch;
-  swatch.Start();
+//   TStopwatch swatch;
+//   swatch.Start();
   kdt = new TKDTreeBinning(DATASZ, DATADIM, smp, NBINS);
-  cout << "\treal time: " << swatch.RealTime() << " seconds" << endl;
+//   cout << "\treal time: " << swatch.RealTime() << " seconds" << endl;
+  
+//  #pragma omp parallel for default(shared)
   for (int entry=0; entry < totaljets; entry++)//loop over entries
     {
       tree->GetEntry(entry);
+//       cout << "\tjet count = " << entry << endl;
       if ( entry % 20000 == 0 ) cout << "\tjet count = " << entry << endl;
       
       double point[3];

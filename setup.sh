@@ -1,3 +1,5 @@
+export PYTHONPATH=`pwd`/delphes/python:$PYTHONPATH
+export LD_LIBRARY_PATH=`pwd`/delphes:$LD_LIBRARY_PATH
 export DELPHES=$PWD/delphes
 export PATH=$PWD/bin:$PATH
 export FASTJET=$PWD/delphes/external

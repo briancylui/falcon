@@ -39,7 +39,6 @@ For more detailed documentation, please visit
 
 https://cp3.irmp.ucl.ac.be/projects/delphes/wiki/WorkBook
 
-
 Configure Delphes on lxplus.cern.ch
 ====================================
 
@@ -81,7 +80,6 @@ Complete description of all branches can be found in
 This information is also available at
 
    https://cp3.irmp.ucl.ac.be/projects/delphes/wiki/WorkBook/RootTreeDescription
-
 
 Macro-based analysis
 ====================

@@ -50,8 +50,8 @@ LD		:= g++
 endif
 CPPFLAGS	:= -I. -I$(DELPHES) -I$(DELPHES)/external -I$(incdir)
 CXXFLAGS	:= -O -Wall -fPIC -g -ansi -Wshadow -Wextra \
-$(shell root-config --cflags)
-LDFLAGS		:= -g
+$(shell root-config --cflags) -fopenmp 
+LDFLAGS		:= -g 
 # ----------------------------------------------------------------------------
 # which operating system?
 OS := $(shell uname -s)
@@ -62,7 +62,7 @@ else
 	LDFLAGS	+= -shared
 	LDEXT	:= .so
 endif	
-LDFLAGS += $(shell root-config --ldflags) -L$(DELPHES)
+LDFLAGS += $(shell root-config --ldflags) -L$(DELPHES) -fopenmp 
 LIBS 	:= -lDelphes -lPyROOT $(shell root-config --libs --nonew)
 LIBRARY	:= $(libdir)/lib$(NAME)$(LDEXT)
 # ----------------------------------------------------------------------------

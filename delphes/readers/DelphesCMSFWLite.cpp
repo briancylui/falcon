@@ -48,8 +48,7 @@
 #include "ExRootAnalysis/ExRootTreeBranch.h"
 #include "ExRootAnalysis/ExRootProgressBar.h"
 
-#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-
+#include "FWCore/FWLite/interface/FWLiteEnabler.h"
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -78,7 +77,7 @@ void ConvertInput(fwlite::Event &event, Long64_t eventCounter,
   vector< const reco::Candidate * >::iterator itCandidate;
 
   handleGenEventInfo.getByLabel(event, "generator");
-  handleLHEEvent.getByLabel(event, "source");
+  handleLHEEvent.getByLabel(event, "externalLHEProducer");
   handleParticle.getByLabel(event, "genParticles");
 
   HepMCEvent *element;
@@ -164,7 +163,7 @@ void ConvertInput(fwlite::Event &event, Long64_t eventCounter,
 
     candidate->Momentum.SetPxPyPzE(px, py, pz, e);
 
-    candidate->Position.SetXYZT(x, y, z, 0.0);
+    candidate->Position.SetXYZT(x*10.0, y*10.0, z*10.0, 0.0);
 
     allParticleOutputArray->Add(candidate);
 
@@ -225,8 +224,8 @@ int main(int argc, char *argv[])
   char *appargv[] = {appName};
   TApplication app(appName, &appargc, appargv);
 
-  AutoLibraryLoader::enable();
-
+  FWLiteEnabler::enable();
+  
   try
   {
     outputFile = TFile::Open(argv[2], "CREATE");

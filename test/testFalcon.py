@@ -157,7 +157,7 @@ struct Reader : public ExRootTreeReader
         h = eval('hjet%dpt' % jj)
         h.SetLineWidth(2)
         h.SetMarkerSize(0.8)
-        h.SetMaximum(ymax)
+#        h.SetMaximum(ymax)
 
         f = eval('fjet%dpt' % jj)                
         f.SetLineWidth(3)
@@ -181,11 +181,11 @@ def main():
     
     if len(sys.argv) > 1:
         simulate(falcon,
-                 ['../data/H2.root'])        
+                 ['../data/susytest10k.root'])        
     else:        
-        build(falcon,
-              ["../data/ttbar13TeV.root",
-               "../data/H213TeV2.root"])
+        build(falcon,["../data/susytrain30k.root"])
+#              ["../data/ttbar13TeV.root",
+#               "../data/H213TeV2.root"])
 
 # ---------------------------------------------------------------------------
 try:
