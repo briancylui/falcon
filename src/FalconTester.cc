@@ -26,7 +26,7 @@
 
 #include "FalconTester.h"
 
-#include<omp.h>
+// #include<omp.h>
 
 using namespace std;
 
