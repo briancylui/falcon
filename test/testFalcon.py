@@ -6,7 +6,7 @@ from histutil import setStyle, mkhist1
 from time import sleep
 from ROOT import *
 # ----------------------------------------------------------------------------
-print gSystem.Load("libFalcon")
+print gSystem.Load("/Users/briancylui/falcon/lib/libFalcon.dylib")
 # ----------------------------------------------------------------------------
 def build(falcon, inputfiles):
     for filename in inputfiles:
@@ -181,11 +181,14 @@ def main():
     
     if len(sys.argv) > 1:
         simulate(falcon,
-                 ['../data/susytest10k.root'])        
+#                 ['../data/susytest10k.root'])        
+              ["../data/ttbar13TeV.root",
+               "../data/H213TeV2.root"])
+
     else:        
-        build(falcon,["../data/susytrain30k.root"])
-#              ["../data/ttbar13TeV.root",
-#               "../data/H213TeV2.root"])
+        build(falcon,#["../data/susytrain30k.root"])
+              ["../data/ttbar13TeV.root",
+               "../data/H213TeV2.root"])
 
 # ---------------------------------------------------------------------------
 try:
