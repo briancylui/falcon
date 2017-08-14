@@ -17,6 +17,14 @@ def build(falcon, inputfiles):
     # save mapping.
     falcon.Match()
 # ----------------------------------------------------------------------------
+def learn(falcon, inputfiles):
+    for filename in inputfiles:
+        if not os.path.exists(filename):
+            exit("can't open input file %s" % filename)
+        falcon.Add(filename)
+    # Create a neural network to learn the built mapping from partons to reco objects.
+    falcon.Learn()
+# ----------------------------------------------------------------------------
 def simulate(falcon, inputfiles):
     code = '''#include <string>
 #include <cassert>
@@ -180,15 +188,17 @@ def main():
     falcon = FalconTester()
     
     if len(sys.argv) > 1:
-        simulate(falcon,
+       if sys.argv[1][0] == 's' or 'S':
+           simulate(falcon,
 #                 ['../data/susytest10k.root'])        
-              ["../data/ttbar13TeV.root",
-               "../data/H213TeV2.root"])
-
+              ["../data/ttbar13TeV.root"])
+#               "../data/H213TeV2.root"])
+       else:
+           learn(falcon,["../data/ttbar13TeV.root"])
     else:        
         build(falcon,#["../data/susytrain30k.root"])
-              ["../data/ttbar13TeV.root",
-               "../data/H213TeV2.root"])
+              ["../data/ttbar13TeV.root"])
+#               "../data/H213TeV2.root"])
 
 # ---------------------------------------------------------------------------
 try:
