@@ -26,6 +26,20 @@
 
 #include "FalconTester.h"
 
+// For TMVARegression with MLP
+#include <cstdlib>
+#include <map>
+#include <string>
+
+#include "TString.h"
+#include "TObjString.h"
+#include "TROOT.h"
+
+#include "TMVA/Tools.h"
+#include "TMVA/Factory.h"
+#include "TMVA/DataLoader.h"
+#include "TMVA/TMVARegGui.h"
+
 // #include<omp.h>
 
 using namespace std;
@@ -250,6 +264,135 @@ RecoJet FalconTester::MapJet(double pt, double eta, double phi)
   int index = kdt->FindBin(point);
   if ( table.find(index) != table.end() )
     return table[index];
+  else
+    return RecoJet();
+}
+
+void FalconTester::Learn(std::string filename)
+{
+  // First Build.                                                               
+  Build(filename);
+
+  cout << "1. open file " << filename << endl;
+
+  TFile rfile(filename.c_str());
+  rfile.cd();
+  TTree* tree = (TTree*)rfile.Get("Falcon");
+  int matched;
+  double genPt, genEta, genPhi;
+  double Pt, Eta, Phi, Mass;
+  tree->SetBranchAddress("matched", &matched);
+  tree->SetBranchAddress("genPt",   &genPt);
+  tree->SetBranchAddress("genEta",  &genEta);
+  tree->SetBranchAddress("genPhi",  &genPhi);
+
+  tree->SetBranchAddress("Pt",      &Pt);
+  tree->SetBranchAddress("Eta",     &Eta);
+  tree->SetBranchAddress("Phi",     &Phi);
+  tree->SetBranchAddress("Mass",    &Mass);
+
+
+  int totaljets = tree->GetEntries();
+
+  const UInt_t DATASZ  = totaljets;
+  const UInt_t DATADIM = 3;
+  const UInt_t NBINS   = totaljets;
+
+  // Use MLP : 3 inputs, 4 outputs, 3-layer neural network.                     
+  // First hidden layer: 10 nodes; second hidden layer: 5 nodes.                
+  cout << "2. Use MLP to train a 3-layer neural network for multi-target 
+regression." << endl;
+
+  // This loads the library.                                                    
+  TMVA::Tools::Instance();
+
+  cout << endl << "==> Start TMVARegression" << endl;
+
+  // Create a new root output file.                                             
+  TString outfileName("TMVAReg.root");
+  TFile* outputFile = TFile::Open(outfileName, "RECREATE");
+
+  // Create the factory object.                                                 
+  // The first argument is the base of the name of all the weightfiles 
+  // in the directory weight, while the second argument is the output 
+  // file for the training results.
+  // All TMVA output can be suppressed by removing the "!" (not) 
+  // in front of the "Silent" argument in the option string.                                       
+  TMVA::Factory *factory = new TMVA::Factory("TMVARegression", outputFile, 
+					     "!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression");
+
+  TMVA::DataLoader *dataloader = new TMVA::DataLoader("dataset");
+
+  // Define the input varialbes that shall be used for the MVA training         
+  dataloader->AddVariable("genPt", "genPt", "units", 'F');
+  dataloader->AddVariable("genEta", "genEta", "units", 'F');
+  dataloader->AddVariable("genPhi", "genPhi", "units", 'F');
+
+  // Add the variables carrying the regression targets                          
+  dataloader->AddTarget("Pt");
+  dataloader->AddTarget("Eta");
+  dataloader->AddTarget("Phi");
+  dataloader->AddTarget("Mass");
+
+  // Read training and test data                                                
+  // Load the signal and background event samples from ROOT trees               
+  // Already opened the input file above as a TFile*: rfile.                    
+  cout << "--- TMVARegression: Using input file: " << rfile->GetName() << endl;
+
+  // Register the regression tree                                               
+  // Done above: TTree* tree.                                                   
+
+  // Add an arbitrary number of regression trees                                
+  Double_t regWeight = 1.0;
+  dataloader->AddRegressionTree(tree, regWeight);
+
+  // Apply additional cuts on the signal and background samples (can be different)                                                                             
+  TCut mycut = "matched==1";
+
+  dataloader->PrepareTrainingAndTestTree(mycut, "nTrain_Regression=1000:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V");
+
+  // Book MVA methods                                                           
+  //                                                                            
+  // Please lookup the various method configuration options in the corresponding cxx files, eg:                                                                
+  // src/MethoCuts.cxx, etc, or here: http://tmva.sourceforge.net/optionRef.html                                                                               
+  // it is possible to preset ranges in the option string in which the cut optimisation should be done:                                                        
+  // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable                                                                       
+
+  factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "!H:!V:VarTransfo\
+rm=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+20:TestRate=6:TrainingMeth\
+od=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests\
+=15:!UseRegulator" );
+
+  // ------------------------------------------------------------------
+  // Now you can tell the factory to train, test, and evaluate the MVAs         
+  // Train MVAs using the set of training events                                
+  factory->TrainAllMethods();
+  // Evaluate all MVAs using the set of test events                             
+  factory->TestAllMethods();
+  // Evaluate and compare performance of all configured MVAs                    
+  factory->EvaluateAllMethods();
+  // --------------------------------------------------------------             
+  // Save the output                                                            
+  outputFile->Close();
+  cout << "==> Wrote root file: " << outputFile->GetName() << endl;
+  cout << "==> TMVARegression is done!" << endl;
+  delete factory;
+  delete dataloader;
+
+  // Launch the GUI for the root macros                                         
+  if (!gROOT->IsBatch()) TMVA::TMVARegGui( outfileName );
+
+  std::cout << "\tjet count = " << totaljets << std::endl;
+  cout << "\tdone!" << endl;
+  rfile.Close();
+}
+
+void FalconTester::LearnJet(double pt, double eta, double phi)
+{
+  double point[3] = {pt, eta, phi};
+  int index = kdt->FindBin(point);
+  if ( tablelearnt.find(index) != tablelearnt.end() )
+    return tablelearnt[index];
   else
     return RecoJet();
 }

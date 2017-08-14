@@ -44,6 +44,7 @@ struct FalconTester
     Jets(std::vector<JetMapItem>()),
     kdt(0),
     table(std::map<int, RecoJet>()),
+    tablelearnt(std::map<int, RecoJet>()),
     inputFiles(std::vector<std::string>()){}
   ~FalconTester() {}
 
@@ -58,10 +59,16 @@ struct FalconTester
 
   RecoJet MapJet(double  pt, double  eta, double  phi);
   
+  void Learn(std::string lookfilename="JetLookupTable.root",
+	     double dRcut=0.35);
+
+  RecoJet LearnJet(double pt, double eta, double phi);
+
   TH1D* drmin; 
   std::vector<JetMapItem> Jets;
   TKDTreeBinning* kdt;
   std::map<int, RecoJet> table;
+  std::map<int, RecoJet> tablelearnt;
   std::vector<std::string> inputFiles;
 };
 
