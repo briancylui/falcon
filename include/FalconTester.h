@@ -59,8 +59,7 @@ struct FalconTester
 
   RecoJet MapJet(double  pt, double  eta, double  phi);
   
-  void Learn(std::string lookfilename="JetLookupTable.root",
-	     double dRcut=0.35);
+  void Learn(std::string lookfilename="JetLookupTable.root");
 
   RecoJet LearnJet(double pt, double eta, double phi);
 

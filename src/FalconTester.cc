@@ -300,8 +300,7 @@ void FalconTester::Learn(std::string filename)
 
   // Use MLP : 3 inputs, 4 outputs, 3-layer neural network.                     
   // First hidden layer: 10 nodes; second hidden layer: 5 nodes.                
-  cout << "2. Use MLP to train a 3-layer neural network for multi-target 
-regression." << endl;
+  cout << "2. Use MLP to train a 3-layer neural network for multi-target regression." << endl;
 
   // This loads the library.                                                    
   TMVA::Tools::Instance();
@@ -337,7 +336,7 @@ regression." << endl;
   // Read training and test data                                                
   // Load the signal and background event samples from ROOT trees               
   // Already opened the input file above as a TFile*: rfile.                    
-  cout << "--- TMVARegression: Using input file: " << rfile->GetName() << endl;
+  cout << "--- TMVARegression: Using input file: " << rfile.GetName() << endl;
 
   // Register the regression tree                                               
   // Done above: TTree* tree.                                                   
@@ -387,7 +386,7 @@ od=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests\
   rfile.Close();
 }
 
-void FalconTester::LearnJet(double pt, double eta, double phi)
+RecoJet FalconTester::LearnJet(double pt, double eta, double phi)
 {
   double point[3] = {pt, eta, phi};
   int index = kdt->FindBin(point);
