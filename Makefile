@@ -63,7 +63,7 @@ else
 	LDEXT	:= .so
 endif	
 LDFLAGS += $(shell root-config --ldflags) -L$(DELPHES) # -fopenmp 
-LIBS 	:= -lDelphes -lPyROOT $(shell root-config --libs --nonew)
+LIBS 	:= -lDelphes -lPyROOT -lTMVA -lTMVAGui $(shell root-config --libs --nonew)
 LIBRARY	:= $(libdir)/lib$(NAME)$(LDEXT)
 # ----------------------------------------------------------------------------
 all: $(LIBRARY)

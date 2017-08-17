@@ -6,6 +6,9 @@ from histutil import setStyle, mkhist1
 from time import sleep
 from ROOT import *
 # ----------------------------------------------------------------------------
+print gSystem.Load("/Users/briancylui/build/lib/libRint.so")
+print gSystem.Load("/Users/briancylui/build/lib/libTMVA.so")
+print gSystem.Load("/Users/briancylui/build/lib/libTMVAGui.so")
 print gSystem.Load("/Users/briancylui/falcon/lib/libFalcon.dylib")
 # ----------------------------------------------------------------------------
 def build(falcon, inputfiles):
