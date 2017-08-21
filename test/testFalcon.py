@@ -5,11 +5,11 @@ from sys import exit
 from histutil import setStyle, mkhist1
 from time import sleep
 from ROOT import *
+from ROOT import TMVA
 # ----------------------------------------------------------------------------
-print gSystem.Load("/Users/briancylui/build/lib/libRint.so")
-print gSystem.Load("/Users/briancylui/build/lib/libTMVA.so")
-print gSystem.Load("/Users/briancylui/build/lib/libTMVAGui.so")
-print gSystem.Load("/Users/briancylui/falcon/lib/libFalcon.dylib")
+print gSystem.Load("/home/brianlui/build/lib/libTMVA.so")
+print gSystem.Load("/home/brianlui/build/lib/libTMVAGui.so")
+print gSystem.Load("/home/brianlui/falcon/lib/libFalcon.so")
 # ----------------------------------------------------------------------------
 def build(falcon, inputfiles):
     for filename in inputfiles:
@@ -26,7 +26,9 @@ def learn(falcon, inputfiles):
             exit("can't open input file %s" % filename)
         falcon.Add(filename)
     # Create a neural network to learn the built mapping from partons to reco objects.
+    print "learning"
     falcon.Learn()
+    print "learned"
 # ----------------------------------------------------------------------------
 def simulate(falcon, inputfiles):
     code = '''#include <string>
@@ -191,13 +193,13 @@ def main():
     falcon = FalconTester()
     
     if len(sys.argv) > 1:
-       if sys.argv[1][0] == 's' or 'S':
-           simulate(falcon,
+        if sys.argv[1][0] == ('s' or 'S'):
+            simulate(falcon,
 #                 ['../data/susytest10k.root'])        
               ["../data/ttbar13TeV.root"])
 #               "../data/H213TeV2.root"])
-       else:
-           learn(falcon,["../data/ttbar13TeV.root"])
+        else:
+            learn(falcon,["../data/ttbar13TeV.root"])
     else:        
         build(falcon,#["../data/susytrain30k.root"])
               ["../data/ttbar13TeV.root"])
