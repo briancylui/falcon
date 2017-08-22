@@ -5,11 +5,10 @@ from sys import exit
 from histutil import setStyle, mkhist1
 from time import sleep
 from ROOT import *
-from ROOT import TMVA
 # ----------------------------------------------------------------------------
-print gSystem.Load("/home/brianlui/build/lib/libTMVA.so")
-print gSystem.Load("/home/brianlui/build/lib/libTMVAGui.so")
-print gSystem.Load("/home/brianlui/falcon/lib/libFalcon.so")
+print gSystem.Load("libTMVA.so")
+print gSystem.Load("libTMVAGui.so")
+print gSystem.Load("libFalcon.so")
 # ----------------------------------------------------------------------------
 def build(falcon, inputfiles):
     for filename in inputfiles:
