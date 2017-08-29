@@ -268,11 +268,8 @@ RecoJet FalconTester::MapJet(double pt, double eta, double phi)
     return RecoJet();
 }
 
-void FalconTester::Learn(std::string filename)
+void FalconTester::Learn(std::string cut_options, std::string prepare_options, std::string book_method_options, std::string filename)
 {
-  // First Build.                                                               
-  Build(filename);
-
   cout << "1. open file " << filename << endl;
 
   TFile rfile(filename.c_str());
@@ -291,12 +288,7 @@ void FalconTester::Learn(std::string filename)
   tree->SetBranchAddress("Phi",     &Phi);
   tree->SetBranchAddress("Mass",    &Mass);
 
-
   int totaljets = tree->GetEntries();
-
-  const UInt_t DATASZ  = totaljets;
-  const UInt_t DATADIM = 3;
-  const UInt_t NBINS   = totaljets;
 
   // Use MLP : 3 inputs, 4 outputs, 3-layer neural network.                     
   // First hidden layer: 10 nodes; second hidden layer: 5 nodes.                
@@ -308,7 +300,7 @@ void FalconTester::Learn(std::string filename)
   cout << endl << "==> Start TMVARegression" << endl;
 
   // Create a new root output file.                                             
-  TString outfileName("TMVAReg.root");
+  TString outfileName("FalconTMVAReg.root");
   TFile* outputFile = TFile::Open(outfileName, "RECREATE");
 
   // Create the factory object.                                                 
@@ -346,9 +338,13 @@ void FalconTester::Learn(std::string filename)
   dataloader->AddRegressionTree(tree, regWeight);
 
   // Apply additional cuts on the signal and background samples (can be different)                                                                             
-  TCut mycut = "matched==1";
+  // Use the example options strings in tutorials/tmva/TMVARegression.C as the default strings unless the user inputs customized ones.
+  TCut mycut = "matched==1"; // default
+  if (cut_options != "") mycut = cut_options.c_str();
+  
+  if (prepare_options == "") prepare_options = "nTrain_Regression=1000:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V";
 
-  dataloader->PrepareTrainingAndTestTree(mycut, "nTrain_Regression=1000:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V");
+  dataloader->PrepareTrainingAndTestTree(mycut, prepare_options);
 
   // Book MVA methods                                                           
   //                                                                            
@@ -357,10 +353,10 @@ void FalconTester::Learn(std::string filename)
   // it is possible to preset ranges in the option string in which the cut optimisation should be done:                                                        
   // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable                                                                       
 
-  factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", "!H:!V:VarTransfo\
-rm=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+20:TestRate=6:TrainingMeth\
-od=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests\
-=15:!UseRegulator" );
+  // Unless the programmer inputs a customized string as the options string for the BookMethod function, use the example in tutorials/tmva/TMVARegression.C as the default options string.
+  if (book_method_options == "") book_method_options = "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+20:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator";
+  
+  factory->BookMethod( dataloader,  TMVA::Types::kMLP, "MLP", book_method_options );
 
   // ------------------------------------------------------------------
   // Now you can tell the factory to train, test, and evaluate the MVAs         
@@ -379,8 +375,11 @@ od=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests\
   delete dataloader;
 
   // Launch the GUI for the root macros                                         
-  if (!gROOT->IsBatch()) TMVA::TMVARegGui( outfileName );
+  //if (!gROOT->IsBatch())
+  TMVA::TMVARegGui( outfileName );
 
+  cout << "If you want to launch the TMVA GUI to see the multi-target regression output, run \"root\" followed by \"root -l " << outputFile->GetName() << "\" inside the ROOT interface." << endl;
+  
   std::cout << "\tjet count = " << totaljets << std::endl;
   cout << "\tdone!" << endl;
   rfile.Close();

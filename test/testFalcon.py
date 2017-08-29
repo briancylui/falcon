@@ -19,15 +19,18 @@ def build(falcon, inputfiles):
     # save mapping.
     falcon.Match()
 # ----------------------------------------------------------------------------
-def learn(falcon, inputfiles):
+def learn(falcon, inputfiles, user_inputs):
     for filename in inputfiles:
         if not os.path.exists(filename):
             exit("can't open input file %s" % filename)
         falcon.Add(filename)
-    # Create a neural network to learn the built mapping from partons to reco objects.
-    print "learning"
-    falcon.Learn()
-    print "learned"
+    # Create a neural network to learn the built mapping from partons to reco object.
+    print "Start building the data set."
+    falcon.Build()
+    print "Finish building the data set."
+    print "Proceed to learn the mapping in the data set."
+    falcon.Learn(user_inputs[0], user_inputs[1], user_inputs[2])
+    print "Finish learning from the data set."
 # ----------------------------------------------------------------------------
 def simulate(falcon, inputfiles):
     code = '''#include <string>
@@ -198,7 +201,14 @@ def main():
               ["../data/ttbar13TeV.root"])
 #               "../data/H213TeV2.root"])
         else:
-            learn(falcon,["../data/ttbar13TeV.root"])
+            cut_options = ""
+            prepare_options = ""
+            book_method_options = ""
+            user_inputs = ["", "", ""]
+            if len(sys.argv) > 2:
+                for i in range(2, len(sys.argv)):
+                    user_inputs[i - 2] = sys.argv[i]
+            learn(falcon,["../data/ttbar13TeV.root"], user_inputs)
     else:        
         build(falcon,#["../data/susytrain30k.root"])
               ["../data/ttbar13TeV.root"])
