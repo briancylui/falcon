@@ -35,7 +35,7 @@ Right now, Falcon's implementation is still tailored towards a specific data inp
 
 ## [](#header-2)Building
 
-Clone the repository of ROOT and build ROOT in the directory `~/build/` following the instructions [here](https://github.com/root-project/root).
+Clone the repository of ROOT and build ROOT in the directory `~/build/` following the instructions [here](https://github.com/root-project/root)
 
 Set up the environment variables for ROOT
 
@@ -44,7 +44,7 @@ $ cd build
 $ source bin/thisroot.sh
 ```
 
-Clone the repositories of Falcon and its data.
+Clone the repositories of Falcon and its data
 
 ```
 $ cd ..
