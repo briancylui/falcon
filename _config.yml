@@ -1,5 +1,5 @@
-title: "Falcon: A Machine Learning Project Implementing Multi-target Regression for Particle Physics"
-description: "Falcon is a hadronization simulator once based on a lookup table and now a neural network."
+title: "Scaling up Falcon: TMVA implementation of neural networks for multi-jet regression"
+description: "Falcon is a hadronization simulator based on once a lookup table and now a neural network."
 show_downloads: true
 google_analytics:
 theme: jekyll-theme-cayman
