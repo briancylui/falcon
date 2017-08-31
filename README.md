@@ -7,17 +7,26 @@ layout: default
 
 Text can be **bold**, _italic_, or ~~strikethrough~~.
 
-[Link to another page](another-page).
+# [](#header-2)Acknowledgement
 
-There should be whitespace between paragraphs.
+The codes for the Falcon package were originally developed by:
+* Sergei Gleyzer, University of Florida and CERN;
+* Harrison Prosper, Florida State University; and 
+* Omar Zapata, UdeA and ITM.
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+The official Falcon package can be found [here](http://oproject.org/falcon).  The simulator package is mentioned in an academic publication: [Les Houches 2015: Physics at TeV colliders - new physics working group report](http://inspirehep.net/record/1456803#).
+
+# [](#header-2)Project Description
+
+
 
 # [](#header-1)Header 1
 
 This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
 
-## [](#header-2)Header 2
+## [](#header-2)Project Description
+
+Falcon
 
 > This is a blockquote following a header.
 >
