@@ -32,6 +32,9 @@ def learn(falcon, inputfiles, user_inputs):
     falcon.Learn(user_inputs[0], user_inputs[1], user_inputs[2])
     print "Finish learning from the data set."
 # ----------------------------------------------------------------------------
+def display(falcon, inputfile, weightfile):
+    falcon.Display(inputfile, weightfile)
+# ----------------------------------------------------------------------------
 def simulate(falcon, inputfiles):
     code = '''#include <string>
 #include <cassert>
@@ -200,7 +203,7 @@ def main():
 #                 ['../data/susytest10k.root'])        
               ["../data/ttbar13TeV.root"])
 #               "../data/H213TeV2.root"])
-        else:
+        elif sys.argv[1][0] == ('l' or 'L'):
             cut_options = ""
             prepare_options = ""
             book_method_options = ""
@@ -209,6 +212,8 @@ def main():
                 for i in range(2, len(sys.argv)):
                     user_inputs[i - 2] = sys.argv[i]
             learn(falcon,["../data/ttbar13TeV.root"], user_inputs)
+        else:
+            display(falcon, "../data/ttbar13TeV.root", "../delphes/dataset/weights/TMVARegression_MLP.weights.xml")
     else:        
         build(falcon,#["../data/susytrain30k.root"])
               ["../data/ttbar13TeV.root"])

@@ -40,6 +40,11 @@
 #include "TMVA/DataLoader.h"
 #include "TMVA/TMVARegGui.h"
 
+// For TMVARegressionApplication with MLP
+#include <vector>
+
+#include "TMVA/Reader.h"
+
 // #include<omp.h>
 
 using namespace std;
@@ -385,12 +390,82 @@ void FalconTester::Learn(std::string cut_options, std::string prepare_options, s
   rfile.Close();
 }
 
-RecoJet FalconTester::LearnJet(double pt, double eta, double phi)
+void FalconTester::Display(std::string inputfile, std::string weightfile)
 {
-  double point[3] = {pt, eta, phi};
-  int index = kdt->FindBin(point);
-  if ( tablelearnt.find(index) != tablelearnt.end() )
-    return tablelearnt[index];
-  else
-    return RecoJet();
+  // This loads the library.
+  TMVA::Tools::Instance();
+
+  // --- Create the Reader object.
+  TMVA::Reader *reader = new TMVA::Reader( "!Color:!Silent" );
+
+  // Create a set of variables and declare them to the reader
+  // - the variable names MUST correspond in name and type to those given in the weight file(s) used.
+  Float_t genPt, genEta, genPhi;
+  reader->AddVariable( "genPt", &genPt );
+  reader->AddVariable( "genEta", &genEta );
+  reader->AddVariable( "genPhi", &genPhi );
+  
+  // --- Book the MVA methods
+  reader->BookMVA(TString("MLP method"), TString(weightfile));
+
+  // Book output histograms
+  TH1* hist = new TH1F("MLP", TString("MLP") + " method", 100, -100, 600);
+
+  // Prepare input tree (this must be replaced by your data source).
+  TFile *input(0);
+  TString fname = inputfile.c_str();
+  if (!gSystem->AccessPathName( fname )) {
+    input = TFile::Open( fname ); // check if file in local directory exists
+  }
+
+  if (!input) {
+    cout << "ERROR: could not open data file" << endl;
+    exit(1);
+  }
+
+  cout << "--- TMVARegressionApp: Using input file: " << input->GetName() << endl;
+
+  // --- Event loop
+
+  // Prepare the tree
+  TTree* theTree = (TTree*) input->Get("Falcon");
+  cout << "--- Select signal sample" << endl;
+  theTree->SetBranchAddress("genPt", &genPt);
+  cout << 1 << endl;
+  theTree->SetBranchAddress("genEta", &genEta);
+  theTree->SetBranchAddress("genPhi", &genPhi);
+
+  cout << "--- Processing: " << theTree->GetEntries() << " events" << endl;
+
+  TStopwatch sw;
+  sw.Start();
+  for (Long64_t ievt = 0; ievt < theTree->GetEntries(); ievt++) {
+    if (ievt % 1000 == 0) {
+      cout << "--- ... Processing event: " << ievt << endl;
+    }
+    theTree->GetEntry(ievt);
+
+    // Retrieve the MVA target values (regression outputs) and fill into histograms
+    // NOTE: EvaluateRegression(..) returns a vector for multi-target regression
+
+    TString title = hist->GetTitle();
+    Float_t val = (reader->EvaluateRegression(title))[0];
+    hist->Fill(val);
+  }
+  sw.Stop();
+  cout << "--- End of event loop: ";
+  sw.Print();
+
+  // --- Write histograms
+
+  TFile *target = new TFile( "FalconTMVARegApp.root", "RECREATE" );
+  hist->Write();
+  target->Close();
+
+  cout << "--- Created root file: \"" << target->GetName() << "\" containing the MVA output histograms" << endl;
+
+  delete reader;
+
+  cout << "==> TMVARegressionApplication is done!" << endl << endl;
 }
+  
