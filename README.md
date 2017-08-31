@@ -39,57 +39,77 @@ Right now, Falcon's implementation is still tailored towards a specific data inp
 
 2. Set up the environment variables for ROOT
 
+```
 $ cd build
 $ source bin/thisroot.sh
+```
 
 3. Clone the repositories of Falcon and its data.
 
+```
 $ cd ..
 $ mkdir falcon
 $ cd falcon
 $ git clone falcon@oproject.org:falcon
 $ git clone falcon@oproject.org:falcondata data
+```
 
 4. Set up the environment variables for Falcon
 
+```
 $ source setup.sh
+```
 
 5. Make the Delphes package inside Falcon
 
+```
 $ cd falcon/delphes
 $ ./configure
 $ make
+```
 
 6. Make the Falcon package
 
+```
 $ cd ..
 $ make
+```
 
 ## [](#header-2)Running
 
 1. Set up the environment variables for ROOT
 
+```
 $ cd build
 $ source bin/thisroot.sh
+```
 
 4. Set up the environment variables for Falcon
 
+```
 $ cd ../falcon
 $ source setup.sh
+```
 
 5. Build the lookup table from the data first
 
+```
 $ cd delphes
 $ python ../test/testFalcon.py
+```
 
 6. Learn the mapping
 
+```
 $ python ../test/testFalcon.py learn [cut-options] [prepare-options] [train_options]
+```
 
 7. Run ROOT to launch TMVA GUI
 
+```
 $ root
 $ Type in the ROOT interface: TMVA::TMVARegGui("FalconTMVAReg.root")
+```
 
 8. Click buttons on the launched TMVA GUI for histograms
 
