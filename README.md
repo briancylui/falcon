@@ -22,7 +22,7 @@ The current version of Falcon started out as a simulator program that implements
 
 ## [](#header-2)Project Objectives
 
-In order to improve Falcon on these two areas, this Google Summer of Code 2017 project aims to deploy existing TMVA tools to empower Falcon with the ability to learn the mapping from parton-level showers to particle-level jets.  With this learning capability, TMVA engineers can then scale the Falcon package to take care of more jet reconstruction tasks with different detector configurations.
+In order to improve Falcon on these two areas, this Google Summer of Code 2017 project aims to deploy existing TMVA tools to empower Falcon with the ability to learn the mapping from parton-level showers to particle-level jets.  With this learning capability, TMVA engineers can then scale up the Falcon package to take care of more jet reconstruction tasks with different detector configurations.
  
 ## [](#header-2)Implementations
 
