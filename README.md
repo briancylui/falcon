@@ -31,3 +31,68 @@ Among a basket of plausible methods, implementing a neural network with the MLP 
 While the core of the project has been finished, near the end of the project I tried something a bit more adventurous: I tried to take one step further to integrate the histogram customization feature in [TMVARegressionApplication.C](https://root.cern.ch/doc/v610/TMVARegressionApplication_8C.html) into Falcon.  However, since a critical TMVA class (TMVA::Reader) has not yet supported certain data types used by the data files for jet reconstruction, useful codes are stored in a branch separate from the master branch, namely TMVARegressionApplication, for future completion.  The master franch is kept free from the above attempt.
 
 Right now, Falcon's implementation is still tailored towards a specific data input format.  Going forward, engineers may find making Falcon serve a more general purpose useful.
+
+
+## [](#header-2)Building
+
+1. Clone the repository of ROOT and build ROOT in the directory `~/build/` following the instructions [here](https://github.com/root-project/root).
+
+2. Set up the environment variables for ROOT
+
+$ cd build
+$ source bin/thisroot.sh
+
+3. Clone the repositories of Falcon and its data.
+
+$ cd ..
+$ mkdir falcon
+$ cd falcon
+$ git clone falcon@oproject.org:falcon
+$ git clone falcon@oproject.org:falcondata data
+
+4. Set up the environment variables for Falcon
+
+$ source setup.sh
+
+5. Make the Delphes package inside Falcon
+
+$ cd falcon/delphes
+$ ./configure
+$ make
+
+6. Make the Falcon package
+
+$ cd ..
+$ make
+
+## [](#header-2)Running
+
+1. Set up the environment variables for ROOT
+
+$ cd build
+$ source bin/thisroot.sh
+
+4. Set up the environment variables for Falcon
+
+$ cd ../falcon
+$ source setup.sh
+
+5. Build the lookup table from the data first
+
+$ cd delphes
+$ python ../test/testFalcon.py
+
+6. Learn the mapping
+
+$ python ../test/testFalcon.py learn [cut-options] [prepare-options] [train_options]
+
+7. Run ROOT to launch TMVA GUI
+
+$ root
+$ Type in the ROOT interface: TMVA::TMVARegGui("FalconTMVAReg.root")
+
+8. Click buttons on the launched TMVA GUI for histograms
+
+## [](#header-2)Questions
+
+Should you have any questions, please do not hesitate to contact Brian Lui (the author of this page) at brianlui@stanford.edu
